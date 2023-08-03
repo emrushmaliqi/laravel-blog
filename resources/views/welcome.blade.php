@@ -10,7 +10,9 @@
 <body>
     <div>
         <span>
-            Hello guys
+            <x-alert type="success">
+                faksmfakmfskamfkak
+            </x-alert>
         </span>
     </div>
 </body>

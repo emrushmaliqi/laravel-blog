@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\HomePage;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostsController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,16 +16,28 @@ use App\Http\Controllers\PostsController;
 */
 
 
-Route::get('/', [HomePage::class, 'index'])->name('home');
 
-Route::resource('posts', PostsController::class);
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified'
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::redirect('/', '/posts')->name('home');
+
+    Route::group(['middleware' => ['role:admin']], function () {
+        Route::get('/dashboard', function () {
+            return view('dashboard');
+        })->name('dashboard');
+    });
+
+    Route::get('/posts/category/{category}', [PostController::class, 'category'])->name('posts.category');
+    Route::resource('posts', PostController::class);
+    Route::get('/user/{id}', [UserController::class, 'show'])->name('users.show');
+    Route::get('/follow/{id}', [UserController::class, 'toggleFollow'])->name('users.follow');
+    Route::get('/user/{id}/followers', [UserController::class, 'followers'])->name('users.followers');
+    Route::get('/user/{id}/following', [UserController::class, 'following'])->name('users.following');
+    Route::get('/user/{id}/remove-following', [UserController::class, 'removeFollowing'])->name('users.remove-following');
+    Route::get('/search/posts/', [PostController::class, 'search'])->name('search.posts');
+    Route::get('/search/users/', [UserController::class, 'search'])->name('search.users');
 });

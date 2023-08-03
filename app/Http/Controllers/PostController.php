@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Post;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class PostsController extends Controller
+class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +15,8 @@ class PostsController extends Controller
     public function index()
     {
         $posts = Post::all();
-        return view('posts.index', ['posts' => $posts]);
+        $categories = Category::all();
+        return view('posts.index', compact('posts', 'categories'));
     }
 
     /**
@@ -23,7 +25,7 @@ class PostsController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('posts.create', ['categories' => $categories]);
+        return view('posts.create', compact('categories'));
     }
 
     /**
@@ -40,7 +42,7 @@ class PostsController extends Controller
         $post->title = $request->title;
         $post->body = $request->content;
         $post->category_id = $request->category;
-        $post->user_id = 2;
+        $post->user_id = Auth::user()->id;;
         $post->save();
         return redirect()->route('posts.show', $post->id);
     }
@@ -51,7 +53,7 @@ class PostsController extends Controller
     public function show(string $id)
     {
         $post = Post::find($id);
-        return view('posts.show', ['post' => $post]);
+        return view('posts.show', compact('post'));
     }
 
     /**
@@ -61,7 +63,7 @@ class PostsController extends Controller
     {
         $post = Post::find($id);
         $categories = Category::all();
-        return view("posts.edit", ['post' => $post, 'categories' => $categories]);
+        return view("posts.edit", compact('post', 'categories'));
     }
 
     /**
@@ -85,5 +87,20 @@ class PostsController extends Controller
         $post = Post::find($id);
         $post->delete();
         return redirect()->route('posts.index')->with('success', 'Post deleted');
+    }
+
+    public function category(string $slug)
+    {
+        $category = Category::where('slug', $slug)->first();
+        $posts = $category->posts;
+        $categories = Category::all();
+        return view('posts.index', compact('posts', 'categories'));
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->search;
+        $posts = Post::where('title', 'LIKE', '%' . $search . '%')->get();
+        return view('search.posts', compact('posts', 'search'));
     }
 }
