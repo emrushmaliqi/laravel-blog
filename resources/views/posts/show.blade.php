@@ -10,7 +10,8 @@
                 <h5>Created: {{$post->created_at}}</h5>
             </div>
             <p>{!!nl2br($post->body)!!}</p>
-            @if(true)
+
+            @if(Auth::user()->id === $post->user_id || Auth::user()->hasRole('admin'))
             <a class="btn btn-primary" href="{{route('posts.edit', $post->id)}}">Edit Post</a>
             <form action="{{route('posts.destroy', $post->id)}}" class="d-inline" method="POST">
                 @method('DELETE')

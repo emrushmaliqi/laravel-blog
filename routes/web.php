@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
@@ -25,10 +27,15 @@ Route::middleware([
 ])->group(function () {
     Route::redirect('/', '/posts')->name('home');
 
-    Route::group(['middleware' => ['role:admin']], function () {
-        Route::get('/dashboard', function () {
-            return view('dashboard');
-        })->name('dashboard');
+    Route::group(['prefix' => 'dashboard', 'middleware' => ['role:admin']], function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::group(['prefix' => '/users'], function () {
+            Route::get('/', [DashboardController::class, 'users'])->name('dashboard.users');
+            Route::delete('/{id}', [DashboardController::class, 'deleteUser'])->name('dashboard.users.destroy');
+        });
+        Route::get('/posts', [DashboardController::class, 'posts'])->name('dashboard.posts');
+        Route::get('/comments', [DashboardController::class, 'comments'])->name('dashboard.comments');
+        Route::resource('/categories', CategoryController::class);
     });
 
     Route::get('/posts/category/{category}', [PostController::class, 'category'])->name('posts.category');

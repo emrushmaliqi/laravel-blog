@@ -62,8 +62,11 @@ class PostController extends Controller
     public function edit(string $id)
     {
         $post = Post::find($id);
-        $categories = Category::all();
-        return view("posts.edit", compact('post', 'categories'));
+        if (Auth::user()->id == $post->user_id || AUth::user()->hasPermissionTo('edit_any_post')) {
+            $categories = Category::all();
+            return view("posts.edit", compact('post', 'categories'));
+        }
+        return abort(403, 'Unauthorized action');
     }
 
     /**
@@ -72,11 +75,14 @@ class PostController extends Controller
     public function update(Request $request, string $id)
     {
         $post = Post::find($id);
-        $post->title = $request->title;
-        $post->body = $request->content;
-        $post->category_id = $request->category;
-        $post->save();
-        return redirect()->route('posts.show', $id)->with('success', 'Post updated');
+        if (Auth::user()->id == $post->user_id || Auth::user()->hasPermissionTo('edit_any_post')) {
+            $post->title = $request->title;
+            $post->body = $request->content;
+            $post->category_id = $request->category;
+            $post->save();
+            return redirect()->route('posts.show', $id)->with('success', 'Post updated');
+        }
+        return abort(403, 'Unauthorized action');
     }
 
     /**
@@ -85,8 +91,11 @@ class PostController extends Controller
     public function destroy(string $id)
     {
         $post = Post::find($id);
-        $post->delete();
-        return redirect()->route('posts.index')->with('success', 'Post deleted');
+        if (Auth::user()->id == $post->user_id || Auth::user()->hasPermissionTo('delete_any_post')) {
+            $post->delete();
+            return redirect()->route('posts.index')->with('success', 'Post deleted');
+        }
+        return abort(403, 'Unauthorized action');
     }
 
     public function category(string $slug)

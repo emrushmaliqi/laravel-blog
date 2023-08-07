@@ -13,6 +13,6 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::insert("INSERT INTO permissions (name, guard_name) values ('view_posts', 'web'), ('edit_self_posts', 'web'), ('delete_self_posts', 'web'), ('create_posts', 'web'), ('edit_any_posts', 'web'), ('delete_any_posts', 'web')");
+        DB::insert("INSERT INTO permissions (name, guard_name) values ('view_post', 'web'), ('edit_self_post', 'web'), ('delete_self_post', 'web'), ('create_post', 'web'), ('edit_any_post', 'web'), ('delete_any_post', 'web')");
     }
 }
