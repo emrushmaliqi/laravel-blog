@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Category;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -111,5 +112,25 @@ class PostController extends Controller
         $search = $request->search;
         $posts = Post::where('title', 'LIKE', '%' . $search . '%')->get();
         return view('search.posts', compact('posts', 'search'));
+    }
+
+    public function comment(Request $request, string $id)
+    {
+        $comment = new Comment();
+        $comment->post_id = $id;
+        $comment->user_id = Auth::user()->id;
+        $comment->body = $request->comment;
+        $comment->save();
+        return redirect()->route('posts.show', $id)->with('success', 'Comment added');
+    }
+
+    public function deleteComment(string $post_id, string $id)
+    {
+        $comment = Comment::find($id);
+        if (Auth::user()->id == $comment->user_id || Auth::user()->hasPermissionTo('delete_any_comment')) {
+            $comment->delete();
+            return redirect()->back()->with('success', 'Comment deleted');
+        }
+        return abort(403, 'Unauthorized action');
     }
 }

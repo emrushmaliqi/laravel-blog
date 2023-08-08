@@ -21,16 +21,10 @@
         </div>
 
 
-        @if(null !== Session::get('success'))
-        <div class="alert alert-success" style="position: fixed; bottom: 10px; right: 10px; transition: 300ms;" role="alert">
+        @if(Session::has('success'))
+        <x-alert type="success">
             {{Session::get('success')}}
-        </div>
-
-        <script>
-            setTimeout(() => {
-                document.querySelector('.alert').style.opacity = 0;
-            }, 3000)
-        </script>
+        </x-alert>
         @endif
     </x-bootstrap>
 </x-app-layout>

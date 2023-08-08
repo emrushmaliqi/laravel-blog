@@ -85,12 +85,16 @@
                     <td>{{$user->email}}</td>
                     <td>{{$user->created_at}}</td>
                     <td>{{$user->email_verified_at}}</td>
-                    <td>
+                    <td class="d-flex flex-column gap-2">
+                        <a href="{{route('users.show', $user->id)}}" class="btn btn-primary">View user</a>
+                        <a href="{{route('dashboard.posts', ['user' => $user->id])}}" class="btn btn-primary">Posts</a>
+                        <a href="{{route('dashboard.comments', ['filter' => 'user-' . $user->id])}}" class="btn btn-primary">Comments</a>
                         <form action="{{route('dashboard.users.destroy', $user->id)}}" method="post">
                             @csrf
                             @method('DELETE')
                             <button class="btn btn-danger" type="submit"><i class="bi bi-trash"></i></button>
                         </form>
+
                     </td>
                 </tr>
                 @endforeach

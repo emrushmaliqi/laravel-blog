@@ -46,5 +46,7 @@ Route::middleware([
     Route::get('/user/{id}/following', [UserController::class, 'following'])->name('users.following');
     Route::get('/user/{id}/remove-following', [UserController::class, 'removeFollowing'])->name('users.remove-following');
     Route::get('/search/posts/', [PostController::class, 'search'])->name('search.posts');
+    Route::post('/posts/{id}/comment', [PostController::class, 'comment'])->name('posts.comment');
+    Route::delete('/posts/{post_id}/comment/{id}', [PostController::class, 'deleteComment'])->name('posts.comment.destroy');
     Route::get('/search/users/', [UserController::class, 'search'])->name('search.users');
 });

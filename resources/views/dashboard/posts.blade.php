@@ -89,14 +89,13 @@
                     <td>{{$post->created_at}}</td>
                     <td class="d-flex flex-column gap-2">
                         <a href="{{route('posts.show', $post->id)}}" class="btn btn-primary ">View</a>
-                        <a href="{{route('posts.edit', $post->id)}}" class="btn btn-primary">Edit</a>
+                        <a href="{{route('dashboard.comments', ['filter' => 'post-' . $post->id])}}" class="btn btn-primary">Comments</a>
+                        <a href="{{route('posts.edit', $post->id)}}" class="btn btn-warning">Edit</a>
                         <form action="{{route('posts.destroy', $post->id)}}" method="POST">
                             @method('DELETE')
                             @csrf
                             <button class="btn btn-danger" type="submit"><i class="bi bi-trash"></i></button>
-
                         </form>
-
                     </td>
                 </tr>
                 @endforeach
