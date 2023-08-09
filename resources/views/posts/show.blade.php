@@ -1,13 +1,22 @@
 <x-app-layout>
     <x-bootstrap>
         @if(null !== $post)
-
         <div class="container">
             <h4>{{$post->title}}</h4>
             <div>
                 <h5>Category: {{$post->category->name}}</h5>
                 <h5>Author: {{$post->user->name}}</h5>
                 <h5>Created: {{$post->created_at}}</h5>
+            </div>
+            <div>
+                <span>{{$post->likes->count()}}@if($post->likes->count() == 1) like @else likes @endif</span>
+                <a href="{{route('posts.like', $post->id)}}" class="btn btn-outline-danger">
+                    @if($post->isLikedBy(Auth::user()))
+                    Unlike <i class="bi bi-heart-fill"></i>
+                    @else
+                    Like <i class="bi bi-heart"></i>
+                    @endif
+                </a>
             </div>
             <p>{!!nl2br($post->body)!!}</p>
 
@@ -34,7 +43,7 @@
                 <div class="py-3">
                     <div class="d-flex align-items-center gap-2">
                         <img src="{{$comment->user->profile_photo_url}}" alt="{{$comment->user->name}} profile photo" class="rounded-circle" style="width: 40px; height: 40px; object-fit:cover">
-                        <h6 class="m-0">{{$comment->user->name}}</h6>
+                        <h6 class="m-0">{{$comment->user->name}} @if($comment->created_at != $comment->updated_at) <small class="text-muted">(edited)</small> @endif - commented {{$comment->created_at->diffForHumans()}}</h6>
                     </div>
                     <p>{{$comment->body}}</p>
                     <small>{{$comment->created_at}}</small>
@@ -50,7 +59,6 @@
                 @endforeach
             </div>
 
-
             @if(Session::has('success'))
             <x-alert type="success">
                 {{Session::get('success')}}
@@ -58,7 +66,6 @@
 
             @endif
         </div>
-
         @else
 
         <div class="container d-flex align-items-center flex-column">
@@ -67,6 +74,8 @@
         </div>
 
         @endif
+
+
 
 </x-app-layout>
 </x-bootstrap>

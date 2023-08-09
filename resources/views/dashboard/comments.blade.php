@@ -1,9 +1,8 @@
     <x-dashboard-layout>
         <div class="container">
             <div class="d-flex align-items-start gap-5">
-                <form action="{{route('dashboard.posts')}}" method="get" class="d-flex w-50 my-3 gap-2" role="search">
+                <form action="{{route('dashboard.comments')}}" method="get" class="d-flex w-50 my-3 gap-2" role="search">
                     <input class="form-control me-2 w-50" name="search" value="{{Request::get('search')}}" type="search" placeholder="Search by title" aria-label="Search">
-
                     <button type="submit" class="btn btn-outline-primary">Search</button>
                 </form>
             </div>

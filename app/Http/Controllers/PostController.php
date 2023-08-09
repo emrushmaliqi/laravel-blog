@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\Like;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
@@ -132,5 +134,17 @@ class PostController extends Controller
             return redirect()->back()->with('success', 'Comment deleted');
         }
         return abort(403, 'Unauthorized action');
+    }
+
+    public function like(string $id)
+    {
+        $like = Like::where(['post_id' => $id, 'user_id' => Auth::user()->id]);
+
+        if ($like->count())
+            $like->delete();
+        else
+            Like::create(['post_id' => $id, 'user_id' => Auth::user()->id]);
+
+        return redirect()->route('posts.show', $id);
     }
 }

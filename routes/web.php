@@ -32,14 +32,18 @@ Route::middleware([
         Route::group(['prefix' => '/users'], function () {
             Route::get('/', [DashboardController::class, 'users'])->name('dashboard.users');
             Route::delete('/{id}', [DashboardController::class, 'deleteUser'])->name('dashboard.users.destroy');
+            Route::post('/{id}/toggle-admin', [DashboardController::class, 'toggleAdmin'])->name('dashboard.users.toggle-admin');
         });
         Route::get('/posts', [DashboardController::class, 'posts'])->name('dashboard.posts');
         Route::get('/comments', [DashboardController::class, 'comments'])->name('dashboard.comments');
+        Route::get('/likes', [DashboardController::class, 'likes'])->name('dashboard.likes');
+        Route::delete('/likes', [DashboardController::class, 'deleteLike'])->name('dashboard.likes.destroy');
         Route::resource('/categories', CategoryController::class);
     });
 
     Route::get('/posts/category/{category}', [PostController::class, 'category'])->name('posts.category');
     Route::resource('posts', PostController::class);
+    Route::get('posts/{id}/like', [PostController::class, 'like'])->name('posts.like');
     Route::get('/user/{id}', [UserController::class, 'show'])->name('users.show');
     Route::get('/follow/{id}', [UserController::class, 'toggleFollow'])->name('users.follow');
     Route::get('/user/{id}/followers', [UserController::class, 'followers'])->name('users.followers');

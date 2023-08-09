@@ -11,6 +11,7 @@
                 <a href="{{route('dashboard.users')}}" class="btn btn-outline-primary">Users</a>
                 <a href="{{route('dashboard.posts')}}" class="btn btn-outline-primary">Posts</a>
                 <a href="{{route('dashboard.comments')}}" class="btn btn-outline-primary">Comments</a>
+                <a href="{{route('dashboard.likes')}}" class="btn btn-outline-primary">Likes</a>
                 <a href="{{route('categories.index')}}" class="btn btn-outline-primary">Categories</a>
             </nav>
             <div class="container">

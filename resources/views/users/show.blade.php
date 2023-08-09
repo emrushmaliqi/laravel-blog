@@ -21,6 +21,13 @@
                 @endif
             </a>
             @endif
+            @if(Auth::user()->hasRole('admin'))
+            <form action="{{route('dashboard.users.destroy', $user->id)}}" method="post" class="my-2">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-danger" type="submit">Delete user</button>
+            </form>
+            @endif
             @if(count($user->posts) > 0)
             <div>
                 @foreach($user->posts as $post)
