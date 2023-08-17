@@ -1,16 +1,20 @@
 <x-dashboard-layout>
     <div class="container">
-        <form action="{{Request::url()}}" method="get" class="d-flex w-25 my-3" role="search">
-            <input class="form-control me-2" name="search" type="search" required placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-primary" type="submit">Search</button>
-        </form>
-        @if(count($users))
+        <div class="d-flex align-items-start gap-5">
+            <form action="{{route('dashboard.users')}}" method="get" class="d-flex w-25 my-3" role="search">
+                <input class="form-control me-2" name="search" value="{{Request::get('search')}}" type="search" required placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+            </form>
+            <span class="ms-auto align-self-center">Total users: {{$total}}</span>
+        </div>
+
+        @if($users->count())
         <table class="table mx-auto">
             <thead>
                 <tr>
                     <th scope="col">
                         @if($sort == "id")
-                        <a href="?sort=id-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}">#
+                        <a href="{{route('dashboard.users', ['sort' => $order == 'asc' ? 'id-desc' : 'id-asc', 'search' => Request::get('search')])}}">#
                             @if($order == 'asc')
                             <i class="bi bi-arrow-up-short"></i>
                             @else
@@ -18,12 +22,12 @@
                             @endif
                         </a>
                         @else
-                        <a href="?sort=id-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}" class="text-black text-decoration-none">#</a>
+                        <a href="{{route('dashboard.users' , ['sort' => 'id-asc', 'search' => Request::get('search')])}}" class="text-black text-decoration-none">#</a>
                         @endif
                     </th>
                     <th scope="col">
                         @if($sort == "name")
-                        <a href="?sort=name-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}">Name
+                        <a href="{{route('dashboard.users', ['sort' => $order == 'asc' ? 'name-desc' : 'name-asc', 'search' => Request::get('search')])}}">Name
                             @if($order == 'asc')
                             <i class="bi bi-arrow-up-short"></i>
                             @else
@@ -31,13 +35,13 @@
                             @endif
                         </a>
                         @else
-                        <a href="?sort=name-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}" class="text-black text-decoration-none">Name</a>
+                        <a href="{{route('dashboard.users' , ['sort' => 'name-asc', 'search' => Request::get('search')])}}" class="text-black text-decoration-none">Name</a>
 
                         @endif
                     </th>
                     <th scope="col">
                         @if($sort == "email")
-                        <a href="?sort=email-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}">Email
+                        <a href="{{route('dashboard.users', ['sort' => $order == 'asc' ? 'email-desc' : 'email-asc', 'search' => Request::get('search')])}}">Email
                             @if($order == 'asc')
                             <i class="bi bi-arrow-up-short"></i>
                             @else
@@ -45,12 +49,12 @@
                             @endif
                         </a>
                         @else
-                        <a href="?sort=email-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}" class="text-black text-decoration-none">Email</a>
+                        <a href="{{route('dashboard.users' , ['sort' => 'email-asc', 'search' => Request::get('search')])}}" class="text-black text-decoration-none">Email</a>
                         @endif
                     </th>
                     <th scope="col">
                         @if($sort == "created_at")
-                        <a href="?sort=created_at-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}">Signed up at
+                        <a href="{{route('dashboard.users', ['sort' => $order == 'asc' ? 'created_at-desc' : 'created_at-asc', 'search' => Request::get('search')])}}">Signed up at
                             @if($order == 'asc')
                             <i class="bi bi-arrow-up-short"></i>
                             @else
@@ -58,12 +62,12 @@
                             @endif
                         </a>
                         @else
-                        <a href="?sort=created_at-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}" class="text-black text-decoration-none">Signed up at</a>
+                        <a href="{{route('dashboard.users' , ['sort' => 'created_at-asc', 'search' => Request::get('search')])}}" class="text-black text-decoration-none">Signed up at</a>
                         @endif
                     </th>
                     <th scope="col">
                         @if($sort == "email_verified_at")
-                        <a href="?sort=email_verified_at-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}">Email verified at
+                        <a href="{{route('dashboard.users', ['sort' => $order == 'asc' ? 'email_verified_at-desc' : 'email_verified_at-asc', 'search' => Request::get('search')])}}">Email verified at
                             @if($order == 'asc')
                             <i class="bi bi-arrow-up-short"></i>
                             @else
@@ -71,7 +75,7 @@
                             @endif
                         </a>
                         @else
-                        <a href="?sort=email_verified_at-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}" class="text-black text-decoration-none">Email verified at</a>
+                        <a href="{{route('dashboard.users' , ['sort' => 'email_verified_at-asc', 'search' => Request::get('search')])}}" class="text-black text-decoration-none">Email verified at</a>
                         @endif
                     </th>
                     <th scope="col">Actions</th>
@@ -110,7 +114,7 @@
                 @endforeach
             </tbody>
         </table>
-
+        <x-pagination :params="['sort' => Request::get('sort'), 'search' => Request::get('search')]" :total-pages="ceil($total / $limit)" />
         @if(Session::has('success'))
         <x-alert type="success">{{Session::get('success')}}</x-alert>
         @endif

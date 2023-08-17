@@ -19,20 +19,24 @@ class DashboardController extends Controller
 
     public function users(Request $request)
     {
+        $limit = 20;
         $sort = 'id';
         $order = 'asc';
         $search = $request->search;
-        $users = [];
+        $users = User::query();
+        $page = $request->page ?? 1;
+        $total = User::count();
+
         if ($request->sort !== null) {
             $sort = explode('-', $request->sort)[0];
             $order = explode('-', $request->sort)[1];
         }
         if ($search)
-            $users = User::where('name', 'like', '%' . $search . '%')->orderBy($sort, $order)->get();
-        else
-            $users = User::orderBy($sort, $order)->get();
+            $users->where('name', 'like', '%' . $search . '%');
 
-        return view('dashboard.users', compact('users', 'sort', 'order'));
+        $users = $users->orderBy($sort, $order)->offset(($page - 1) * $limit)->limit($limit)->get();
+
+        return view('dashboard.users', compact('users', 'sort', 'order', 'total', 'limit'));
     }
 
     public function toggleAdmin($id)
@@ -56,6 +60,7 @@ class DashboardController extends Controller
 
     public function posts(Request $request)
     {
+        $limit = 10;
         $sort = 'id';
         $order = 'asc';
         $search = $request->search;
@@ -63,6 +68,9 @@ class DashboardController extends Controller
         $user = $request->user;
         $categories = Category::all();
         $posts = Post::query();
+        $query_params = [];
+        $page = $request->page ?? 1;
+        $total = Post::count();
 
         if ($request->sort !== null) {
             $sort = explode('-', $request->sort)[0];
@@ -70,26 +78,36 @@ class DashboardController extends Controller
         }
 
 
-        if ($search)
+        if ($search) {
             $posts->where('title', 'like', '%' . $search . '%');
-        if ($category)
+            $query_params['search'] = $search;
+        }
+        if ($category) {
             $posts->where('category_id', $category);
+            $query_params['category'] = $category;
+        }
 
-        if ($user)
+        if ($user) {
             $posts->where('user_id', $user);
+            $query_params['user'] = $user;
+        }
 
-        $posts = $posts->orderBy($sort, $order)->get();
+        $posts = $posts->orderBy($sort, $order)->offset(($page - 1) * $limit)->limit($limit)->get();
 
-        return view('dashboard.posts', compact('posts', 'sort', 'order', 'categories'));
+        return view('dashboard.posts', compact('posts', 'sort', 'order', 'categories', 'query_params', 'total', 'limit'));
     }
 
     public function comments(Request $request)
     {
+        $limit = 20;
         $sort = 'id';
         $order = 'asc';
         $search = $request->search;
         $comments = Comment::query();
+        $page = $request->page ?? 1;
+        $total = Comment::count();
 
+        $query_params = [];
 
         if ($request->sort !== null) {
             $sort = explode('-', $request->sort)[0];
@@ -103,21 +121,28 @@ class DashboardController extends Controller
                 $comments->where('user_id', $value);
             else if ($filter == 'post')
                 $comments->where('post_id', $value);
+            $query_params['filter'] = $request->filter;
         }
 
-        if ($search)
+        if ($search) {
             $comments->where('body', 'like', '%' . $search . '%');
+            $query_params['search'] = $search;
+        }
 
-        $comments = $comments->orderBy($sort, $order)->get();
 
-        return view('dashboard.comments', compact('comments', 'sort', 'order'));
+        $comments = $comments->orderBy($sort, $order)->offset(($page - 1) * $limit)->limit($limit)->get();
+
+        return view('dashboard.comments', compact('comments', 'sort', 'order', 'query_params', 'total', 'limit'));
     }
 
     public function likes(Request $request)
     {
+        $limit = 20;
         $sort = 'created_at';
         $order = 'desc';
         $likes = Like::query();
+        $page =  $request->page ?? 1;
+        $total = Like::count();
 
         if ($request->sort) {
             $sort = explode('-', $request->sort)[0];
@@ -133,9 +158,10 @@ class DashboardController extends Controller
                 $likes->where('post_id', $value);
         }
 
-        $likes = $likes->orderBy($sort, $order)->get();
 
-        return view('dashboard.likes', compact('likes', 'sort', 'order'));
+        $likes = $likes->orderBy($sort, $order)->offset(($page - 1) * $limit)->limit($limit)->get();
+
+        return view('dashboard.likes', compact('likes', 'sort', 'order', 'total', 'limit'));
     }
 
     public function deleteLike(Request $request)

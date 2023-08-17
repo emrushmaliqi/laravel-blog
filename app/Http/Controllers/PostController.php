@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
-use App\Models\Category;
-use App\Models\Comment;
 use App\Models\Like;
+use App\Models\Post;
+use App\Models\Save;
+use App\Models\Comment;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -15,11 +16,14 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::all();
+        $limit = 20;
+        $total_pages = ceil(Post::count() / $limit);
+        $page = $request->page ?? 1;
+        $posts = Post::orderBy('created_at', 'desc')->offset(($page - 1) * $limit)->limit($limit)->get();
         $categories = Category::all();
-        return view('posts.index', compact('posts', 'categories'));
+        return view('posts.index', compact('posts', 'categories', 'total_pages'));
     }
 
     /**
@@ -36,9 +40,9 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'title' => 'required',
-            'content' => 'required',
+        $request->validate([
+            'title' => 'required|min:5',
+            'content' => 'required|min:30',
             'category' => 'required'
         ]);
         $post = new Post();
@@ -53,7 +57,7 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
         $post = Post::find($id);
         return view('posts.show', compact('post'));
@@ -77,6 +81,12 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $request->validate([
+            'title' => 'required|min:5',
+            'content' => 'required|min:30',
+            'category' => 'required'
+        ]);
+
         $post = Post::find($id);
         if (Auth::user()->id == $post->user_id || Auth::user()->hasPermissionTo('edit_any_post')) {
             $post->title = $request->title;
@@ -101,16 +111,21 @@ class PostController extends Controller
         return abort(403, 'Unauthorized action');
     }
 
-    public function category(string $slug)
+    public function category(Request $request, string $slug)
     {
         $category = Category::where('slug', $slug)->first();
-        $posts = $category->posts;
+        $limit = 20;
+        $total_pages = ceil(Post::where('category_id', $category->id)->count() / $limit);
+        $page = $request->page ?? 1;
+        $posts = $category->posts()->orderBy('created_at', 'desc')->offset(($page - 1) * $limit)->limit($limit)->get();
         $categories = Category::all();
-        return view('posts.index', compact('posts', 'categories'));
+        return view('posts.index', compact('posts', 'categories', 'total_pages'));
     }
 
     public function search(Request $request)
     {
+        $request->validate(['search' => 'required']);
+
         $search = $request->search;
         $posts = Post::where('title', 'LIKE', '%' . $search . '%')->get();
         return view('search.posts', compact('posts', 'search'));
@@ -118,6 +133,8 @@ class PostController extends Controller
 
     public function comment(Request $request, string $id)
     {
+        $request->validate(['comment' => 'required']);
+
         $comment = new Comment();
         $comment->post_id = $id;
         $comment->user_id = Auth::user()->id;
@@ -126,7 +143,30 @@ class PostController extends Controller
         return redirect()->route('posts.show', $id)->with('success', 'Comment added');
     }
 
-    public function deleteComment(string $post_id, string $id)
+    public function editComment(string $id)
+    {
+        $comment = Comment::find($id);
+        if (Auth::user()->id == $comment->user_id || Auth::user()->hasPermissionTo('edit_any_comment')) {
+            return view('comments.edit', compact('comment'));
+        }
+        return abort(403, 'Unauthorized action');
+    }
+    public function updateComment(Request $request, string $id)
+    {
+        $request->validate([
+            'comment' => 'required'
+        ]);
+
+        $comment = Comment::find($id);
+        if (Auth::user()->id == $comment->user_id || Auth::user()->hasPermissionTo('edit_any_comment')) {
+            $comment->body = $request->comment;
+            $comment->save();
+            return redirect()->route('posts.show', $comment->post_id)->with('success', 'Post updated');
+        }
+        return abort(403, 'Unauthorized action');
+    }
+
+    public function deleteComment(string $id)
     {
         $comment = Comment::find($id);
         if (Auth::user()->id == $comment->user_id || Auth::user()->hasPermissionTo('delete_any_comment')) {
@@ -145,6 +185,31 @@ class PostController extends Controller
         else
             Like::create(['post_id' => $id, 'user_id' => Auth::user()->id]);
 
+        return redirect()->route('posts.show', $id);
+    }
+
+    public function saved(Request $request)
+    {
+        $limit = 20;
+        $total_pages = ceil(Post::count() / $limit);
+        $page = $request->page ?? 1;
+
+        $posts = Auth::user()->savedPosts()->offset(($page - 1) * $limit)->limit($limit)->get();
+
+        return view('posts.saved', compact('posts', 'limit', 'total_pages'));
+    }
+
+    public function save(string $id)
+    {
+        $save = Save::where(['post_id' => $id, 'user_id' => Auth::user()->id]);
+        if ($save->count())
+            $save->delete();
+        else {
+            $save = new Save();
+            $save->post_id = $id;
+            $save->user_id = Auth::user()->id;
+            $save->save();
+        }
         return redirect()->route('posts.show', $id);
     }
 }

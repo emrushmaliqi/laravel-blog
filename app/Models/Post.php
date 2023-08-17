@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Models\Like;
+use App\Models\Save;
 use App\Models\User;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,11 +42,24 @@ class Post extends Model
         return $this->hasMany(Like::class);
     }
 
+    public function saves(): HasMany
+    {
+        return $this->hasMany(Save::class);
+    }
+
     public function isLikedBy(User $user): bool
     {
         $like = $this->likes->where('user_id', $user->id)->first();
 
         if ($like)
+            return true;
+        return false;
+    }
+
+    public function isSaved(): bool
+    {
+        $save = $this->saves()->where(['post_id' => $this->id, 'user_id' => Auth::user()->id])->first();
+        if ($save !== null)
             return true;
         return false;
     }

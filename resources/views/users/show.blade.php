@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-bootstrap>
         @if($user !== null)
-        <div class="container">
+        <div class="container py-3">
             <img src="{{$user->profile_photo_url}}" alt="{{$user->name}}" class="rounded-circle" style="width:150px; height:150px; object-fit:cover;">
             <h3>{{$user->name}}</h3>
             <h4>{{$user->email}}</h4>
@@ -29,7 +29,7 @@
             </form>
             @endif
             @if(count($user->posts) > 0)
-            <div>
+            <div class="d-flex gap-2 flex-wrap">
                 @foreach($user->posts as $post)
                 <x-post-card :post="$post" />
                 @endforeach

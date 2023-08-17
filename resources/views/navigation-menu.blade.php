@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
+                    <a href="{{ route('posts.index') }}">
                         <x-application-mark class="block h-9 w-auto" />
                     </a>
                 </div>
@@ -20,9 +20,14 @@
                     <x-nav-link href="{{ route('posts.index') }}" :active="request()->routeIs('posts.index')">
                         {{__('Posts')}}
                     </x-nav-link>
+                    @if(Auth::check())
                     <x-nav-link href="{{ route('users.show', Auth::user()->id)}}" :active="url()->current() == route('users.show', Auth::user()->id)">
                         {{__('Profile')}}
                     </x-nav-link>
+                    <x-nav-link href="{{ route('posts.saved')}}" :active="request()->routeIs('posts.saved')">
+                        {{__('Saved posts')}}
+                    </x-nav-link>
+                    @endif
                 </div>
             </div>
             <div class="align-self-center">
@@ -32,6 +37,12 @@
                 </form>
             </div>
 
+            @if(!Auth::check())
+            <div class="align-self-center">
+                <a href="{{route('login')}}" class="text-decoration-none px-6 py-2 text-blue-600 border border-blue-600 rounded-md  hover:bg-blue-500 hover:text-white">Login</a>
+            </div>
+            @endif
+            @if(Auth::check())
             <div class="hidden sm:flex sm:items-center sm:ml-6">
                 <!-- Teams Dropdown -->
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
@@ -146,9 +157,11 @@
                     </svg>
                 </button>
             </div>
+            @endif
         </div>
     </div>
 
+    @if(Auth::check())
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
@@ -228,4 +241,5 @@
             </div>
         </div>
     </div>
+    @endif
 </nav>

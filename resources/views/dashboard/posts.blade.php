@@ -17,15 +17,16 @@
                 </div>
                 <button type="submit" class="btn btn-outline-primary">Search</button>
             </form>
+            <span class="ms-auto align-self-center">Total posts: {{$total}}</span>
         </div>
 
-        @if(count($posts))
+        @if($posts->count())
         <table class="table mx-auto">
             <thead>
                 <tr>
                     <th scope="col" style="width: 47px;">
                         @if($sort == "id")
-                        <a href="?sort=id-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}{{Request::has('category') ? '&category=' . Request::get('category') : ''}}{{Request::has('user') ? '&user=' . Request::get('user') : ''}}">#
+                        <a href="{{route('dashboard.posts', array_merge($query_params, ['sort' => 'id-' . ($order == 'asc' ? 'desc' : 'asc')]))}}">#
                             @if($order == 'asc')
                             <i class="bi bi-arrow-up-short"></i>
                             @else
@@ -33,12 +34,12 @@
                             @endif
                         </a>
                         @else
-                        <a href="?sort=id-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}{{Request::has('category') ? '&category=' . Request::get('category') : ''}}{{Request::has('user') ? '&user=' . Request::get('user') : ''}}" class="text-black text-decoration-none">#</a>
+                        <a href="{{route('dashboard.posts', array_merge($query_params, ['sort' => 'id-asc']))}}" class="text-black text-decoration-none">#</a>
                         @endif
                     </th>
                     <th scope="col">
                         @if($sort == "title")
-                        <a href="?sort=title-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}{{Request::has('category') ? '&category=' . Request::get('category') : ''}}{{Request::has('user') ? '&user=' . Request::get('user') : ''}}">Title
+                        <a href="{{route('dashboard.posts', array_merge($query_params, ['sort' => 'title-' . ($order == 'asc' ? 'desc' : 'asc')]))}}">Title
                             @if($order == 'asc')
                             <i class="bi bi-arrow-up-short"></i>
                             @else
@@ -46,12 +47,12 @@
                             @endif
                         </a>
                         @else
-                        <a href="?sort=title-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}{{Request::has('category') ? '&category=' . Request::get('category') : ''}}{{Request::has('user') ? '&user=' . Request::get('user') : ''}}" class="text-black text-decoration-none">Title</a>
+                        <a href="{{route('dashboard.posts', array_merge($query_params, ['sort' => 'title-asc']))}}" class="text-black text-decoration-none">Title</a>
                         @endif
                     </th>
                     <th scope="col">
                         @if($sort == "body")
-                        <a href="?sort=body-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}{{Request::has('category') ? '&category=' . Request::get('category') : ''}}{{Request::has('user') ? '&user=' . Request::get('user') : ''}}">Body
+                        <a href="{{route('dashboard.posts', array_merge($query_params, ['sort' => 'body-' . ($order == 'asc' ? 'desc' : 'asc')]))}}">Body
                             @if($order == 'asc')
                             <i class="bi bi-arrow-up-short"></i>
                             @else
@@ -59,14 +60,14 @@
                             @endif
                         </a>
                         @else
-                        <a href="?sort=body-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}{{Request::has('category') ? '&category=' . Request::get('category') : ''}}{{Request::has('user') ? '&user=' . Request::get('user') : ''}}" class="text-black text-decoration-none">Body</a>
+                        <a href="{{route('dashboard.posts', array_merge($query_params, ['sort' => 'body-asc']))}}" class="text-black text-decoration-none">Body</a>
                         @endif
                     </th>
                     <th scope="col">User</th>
                     <th scope="col">Category</th>
                     <th scope="col">
                         @if($sort == "created_at")
-                        <a href="?sort=created_at-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}{{Request::has('category') ? '&category=' . Request::get('category') : ''}}{{Request::has('user') ? '&user=' . Request::get('user') : ''}}">Posted at
+                        <a href="{{route('dashboard.posts', array_merge($query_params, ['sort' => 'created_at-' . ($order == 'asc' ? 'desc' : 'asc')]))}}" class="d-flex">Posted at
                             @if($order == 'asc')
                             <i class="bi bi-arrow-up-short"></i>
                             @else
@@ -74,7 +75,7 @@
                             @endif
                         </a>
                         @else
-                        <a href="?sort=created_at-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}{{Request::has('category') ? '&category=' . Request::get('category') : ''}}{{Request::has('user') ? '&user=' . Request::get('user') : ''}}" class="text-black text-decoration-none">Posted at</a>
+                        <a href="{{route('dashboard.posts', array_merge($query_params, ['sort' => 'created_at-asc']))}}" class="text-black text-decoration-none">Posted at</a>
                         @endif
                     </th>
                     <th scope="col" style="width:220px;">Actions</th>
@@ -108,6 +109,8 @@
                 @endforeach
             </tbody>
         </table>
+        <x-pagination :params="array_merge($query_params, ['sort' => Request::get('sort')])" :total-pages="ceil($total / $limit)" />
+
         @else
         <h4>No posts found</h4>
         @endif

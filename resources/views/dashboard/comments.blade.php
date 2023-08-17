@@ -2,18 +2,22 @@
         <div class="container">
             <div class="d-flex align-items-start gap-5">
                 <form action="{{route('dashboard.comments')}}" method="get" class="d-flex w-50 my-3 gap-2" role="search">
+                    @if(Request::has('filter'))
+                    <input type="hidden" name="filter" value="{{Request::get('filter')}}">
+                    @endif
                     <input class="form-control me-2 w-50" name="search" value="{{Request::get('search')}}" type="search" placeholder="Search by title" aria-label="Search">
                     <button type="submit" class="btn btn-outline-primary">Search</button>
                 </form>
+                <span class="ms-auto align-self-center">Total comments: {{$total}}</span>
             </div>
 
-            @if(count($comments))
+            @if($comments->count())
             <table class="table mx-auto">
                 <thead>
                     <tr>
                         <th scope="col" style="width: 47px;">
                             @if($sort == "id")
-                            <a href="?sort=id-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}">#
+                            <a href="{{route('dashboard.comments', array_merge($query_params, ['sort' => $order == 'asc' ? 'id-desc' : 'id-asc']))}}">#
                                 @if($order == 'asc')
                                 <i class="bi bi-arrow-up-short"></i>
                                 @else
@@ -21,12 +25,12 @@
                                 @endif
                             </a>
                             @else
-                            <a href="?sort=id-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}{{Request::has('category') ? '&category=' . Request::get('category'): ''}}" class="text-black text-decoration-none">#</a>
+                            <a href="{{route('dashboard.comments', array_merge($query_params, ['sort' => 'id-asc']))}}" class="text-black text-decoration-none">#</a>
                             @endif
                         </th>
                         <th scope="col">
                             @if($sort == "body")
-                            <a href="?sort=body-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}">Comment
+                            <a href="{{route('dashboard.comments', array_merge($query_params, ['sort' => $order == 'asc' ? 'body-desc' : 'body-asc']))}}">Comment
                                 @if($order == 'asc')
                                 <i class="bi bi-arrow-up-short"></i>
                                 @else
@@ -34,15 +38,14 @@
                                 @endif
                             </a>
                             @else
-                            <a href="?sort=body-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}" class="text-black text-decoration-none">Comment</a>
-
+                            <a href="{{route('dashboard.comments', array_merge($query_params, ['sort' => 'body-asc']))}}" class="text-black text-decoration-none">Comment</a>
                             @endif
                         </th>
                         <th scope="col">User</th>
                         <th scope="col">Post id</th>
                         <th scope="col">
                             @if($sort == "created_at")
-                            <a href="?sort=created_at-@if($order == 'asc'){{'desc'}}@else{{'asc'}}@endif{{Request::has('search') ? '&search=' . Request::get('search'): ''}}">Created at
+                            <a href="{{route('dashboard.comments', array_merge($query_params, ['sort' => $order == 'asc' ? 'created_at-desc' : 'created_at-asc']))}}">Created at
                                 @if($order == 'asc')
                                 <i class="bi bi-arrow-up-short"></i>
                                 @else
@@ -50,7 +53,7 @@
                                 @endif
                             </a>
                             @else
-                            <a href="?sort=created_at-asc{{Request::has('search') ? '&search=' . Request::get('search'): ''}}{{Request::has('category') ? '&category=' . Request::get('category'): ''}}" class="text-black text-decoration-none">Created at</a>
+                            <a href="{{route('dashboard.comments', array_merge($query_params, ['sort' => 'created_at-asc']))}}" class="text-black text-decoration-none">Created at</a>
                             @endif
                         </th>
                         <th scope="col">Actions</th>
@@ -77,6 +80,8 @@
                     @endforeach
                 </tbody>
             </table>
+            <x-pagination :params="array_merge($query_params, ['sort' => Request::get('sort')])" :total-pages="ceil($total / $limit)" />
+
             @else
             <h4>No comments found</h4>
             @endif

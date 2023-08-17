@@ -100,4 +100,9 @@ class User extends Authenticatable
             return true;
         return false;
     }
+
+    public function savedPosts()
+    {
+        return $this->belongsToMany(Post::class, 'saves', 'user_id', 'post_id')->orderByPivot('created_at', 'desc');
+    }
 }
