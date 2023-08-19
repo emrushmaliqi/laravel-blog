@@ -1,8 +1,7 @@
 <x-app-layout>
     <x-bootstrap>
         <div class="container">
-            <nav>
-                <h3 class="text-center">Categories</h3>
+            <nav class="my-3">
                 <div class="d-flex justify-content-center gap-2">
                     @foreach($categories as $category)
                     <a href="{{route('posts.category', $category->slug)}}" class="btn btn-outline-primary @if(url()->current() == route('posts.category', $category->slug)) active @endif">{{$category->name}}</a>

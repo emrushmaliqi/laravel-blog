@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Like;
 use App\Models\Save;
 use App\Models\User;
+use App\Models\Image;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
@@ -40,6 +41,11 @@ class Post extends Model
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class);
     }
 
     public function saves(): HasMany

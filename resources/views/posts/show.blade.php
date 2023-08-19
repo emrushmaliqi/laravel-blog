@@ -36,6 +36,26 @@
             @endif
             @endif
             <p>{!!nl2br($post->body)!!}</p>
+            @if($post->images->count() > 0)
+            <div class="d-flex flex-wrap gap-2 my-2">
+                @if(Auth::check() && (Auth::user()->id === $post->user_id || Auth::user()->hasRole('admin')))
+                @foreach($post->images as $image)
+                <div class="position-relative">
+                    <img src="{{$image->url()}}" class="img-fluid" style="height: 200px;" />
+                    <form action="{{route('posts.image.destroy', ['post_id' => $post->id, 'id' => $image->id])}}" method="post" class="position-absolute" style="top: 5px; right: 5px;">
+                        @csrf
+                        @method('DELETE')
+                        <button onclick="return confirm('Are you sure?')" type="submit" class="btn btn-outline-danger">Delete Image</button>
+                    </form>
+                </div>
+                @endforeach
+                @else
+                @foreach($post->images as $image)
+                <img src="{{$image->url()}}" class="img-fluid" style="height: 200px;" />
+                @endforeach
+                @endif
+            </div>
+            @endif
             @if(Auth::check() && (Auth::user()->id === $post->user_id || Auth::user()->hasRole('admin')))
             <a class="btn btn-primary" href="{{route('posts.edit', $post->id)}}">Edit Post</a>
             <form action="{{route('posts.destroy', $post->id)}}" class="d-inline" method="POST">

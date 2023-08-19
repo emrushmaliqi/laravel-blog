@@ -2,7 +2,7 @@
     <x-bootstrap>
         <div class="container py-2">
             <h2 class="text-center  my-4">Edit Post</h2>
-            <form action="{{route('posts.update', $post->id)}}" method="POST">
+            <form action="{{route('posts.update', $post->id)}}" method="POST" enctype="multipart/form-data">
                 @method('PUT')
                 @csrf
                 <div class="form-group">
@@ -21,8 +21,13 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="images" class="btn btn-primary mt-2">Add Images</label>
+                    <input type="file" accept="image/*" name="images[]" class="hidden" id="images" multiple="multiple" class="form-control">
+                </div>
                 <button class=" btn btn-primary mt-3" role="button">Update</button>
             </form>
+            <div id="images-container"></div>
 
 
 
@@ -43,6 +48,21 @@
             function textAreaAdjust(element) {
                 element.style.height = "1px";
                 element.style.height = (25 + element.scrollHeight) + "px";
+            }
+
+            const imgInp = document.getElementById('images');
+            const imgContainer = document.getElementById('images-container');
+
+            imgInp.onchange = e => {
+                const {
+                    files
+                } = imgInp;
+
+                imgContainer.innerHTML = '<h5>Images</h5><div class="d-flex flex-wrap gap-2"></div>'
+
+                for (image of files) {
+                    imgContainer.querySelector('div').innerHTML += `<img id="img-${imgContainer.childElementCount + 1}" src="${URL.createObjectURL(image)}" style="max-height: 150px;"/>`
+                }
             }
         </script>
     </x-bootstrap>

@@ -44,6 +44,7 @@ Route::middleware([
     Route::get('posts/saved', [PostController::class, 'saved'])->name('posts.saved');
     Route::get('posts/{id}/like', [PostController::class, 'like'])->name('posts.like');
     Route::get('posts/{id}/save', [PostController::class, 'save'])->name('posts.save');
+    Route::delete('post/{post_id}/image/{id}', [PostController::class, 'deleteImage'])->name('posts.image.destroy');
     Route::get('/user/{id}', [UserController::class, 'show'])->name('users.show');
     Route::get('/follow/{id}', [UserController::class, 'toggleFollow'])->name('users.follow');
     Route::get('/user/{id}/followers', [UserController::class, 'followers'])->name('users.followers');

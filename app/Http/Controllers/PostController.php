@@ -7,9 +7,11 @@ use App\Models\Post;
 use App\Models\Save;
 use App\Models\Comment;
 use App\Models\Category;
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -43,14 +45,25 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required|min:5',
             'content' => 'required|min:30',
-            'category' => 'required'
+            'category' => 'required',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
         $post = new Post();
         $post->title = $request->title;
         $post->body = $request->content;
         $post->category_id = $request->category;
         $post->user_id = Auth::user()->id;;
         $post->save();
+        if ($request->has('images')) {
+            foreach ($request->images as $image) {
+                $image->store('public/posts/images/');
+                $db_image = new Image();
+                $db_image->path = $image->hashName();
+                $db_image->post_id = $post->id;
+                $db_image->save();
+            }
+        }
         return redirect()->route('posts.show', $post->id);
     }
 
@@ -84,7 +97,8 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required|min:5',
             'content' => 'required|min:30',
-            'category' => 'required'
+            'category' => 'required',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         $post = Post::find($id);
@@ -93,6 +107,16 @@ class PostController extends Controller
             $post->body = $request->content;
             $post->category_id = $request->category;
             $post->save();
+
+            if ($request->has('images')) {
+                foreach ($request->images as $image) {
+                    $image->store('public/posts/images/');
+                    $db_image = new Image();
+                    $db_image->path = $image->hashName();
+                    $db_image->post_id = $post->id;
+                    $db_image->save();
+                }
+            }
             return redirect()->route('posts.show', $id)->with('success', 'Post updated');
         }
         return abort(403, 'Unauthorized action');
@@ -211,5 +235,17 @@ class PostController extends Controller
             $save->save();
         }
         return redirect()->route('posts.show', $id);
+    }
+
+    public function deleteImage(string $post_id, string $image_id)
+    {
+        $image = Image::find($image_id);
+        if (Auth::user()->id == $image->post->user_id || Auth::user()->hasRole('admin')) {
+            $image->delete();
+            Storage::delete('public/posts/images/' . $image->path);
+            return redirect()->route('posts.show', $post_id)->with('success', 'Image deleted');
+        }
+
+        return abort(403, 'Unauthorized action');
     }
 }
