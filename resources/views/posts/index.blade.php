@@ -8,9 +8,6 @@
                     @endforeach
                 </div>
             </nav>
-            <div>
-                <a href="{{route('posts.create')}}" class="btn btn-primary">Create a new post</a>
-            </div>
             <div class="d-flex flex-wrap justify-content-center gap-2 py-4">
                 @foreach($posts as $post)
                 <x-post-card :post="$post" />

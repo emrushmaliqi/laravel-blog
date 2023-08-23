@@ -215,7 +215,7 @@ class PostController extends Controller
     public function saved(Request $request)
     {
         $limit = 20;
-        $total_pages = ceil(Post::count() / $limit);
+        $total_pages = ceil(Auth::user()->savedPosts()->count() / $limit);
         $page = $request->page ?? 1;
 
         $posts = Auth::user()->savedPosts()->offset(($page - 1) * $limit)->limit($limit)->get();
@@ -234,7 +234,7 @@ class PostController extends Controller
             $save->user_id = Auth::user()->id;
             $save->save();
         }
-        return redirect()->route('posts.show', $id);
+        return redirect()->back();
     }
 
     public function deleteImage(string $post_id, string $image_id)

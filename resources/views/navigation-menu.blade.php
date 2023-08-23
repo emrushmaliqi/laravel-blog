@@ -27,19 +27,22 @@
                     <x-nav-link href="{{ route('posts.saved')}}" :active="request()->routeIs('posts.saved')">
                         {{__('Saved posts')}}
                     </x-nav-link>
+                    <x-nav-link href="{{ route('posts.create')}}" :active="request()->routeIs('posts.create')">
+                        {{__('Create a post')}}
+                    </x-nav-link>
                     @endif
                 </div>
             </div>
             <div class="align-self-center">
-                <form action="{{route('search.posts')}}" method="get">
-                    <input type="text" name="search" required>
-                    <button type="submit">Search</button>
+                <form action="{{route('search.posts')}}" method="get" class="d-flex">
+                    <input class="form-control me-2" name="search" type="search" placeholder="Search" aria-label="Search" required>
+                    <button class="btn btn-outline-primary" type="submit">Search</button>
                 </form>
             </div>
 
             @if(!Auth::check())
             <div class="align-self-center">
-                <a href="{{route('login')}}" class="text-decoration-none px-6 py-2 text-blue-600 border border-blue-600 rounded-md  hover:bg-blue-500 hover:text-white">Login</a>
+                <a href="{{route('login')}}" class="btn btn-outline-primary">Login</a>
             </div>
             @endif
             @if(Auth::check())

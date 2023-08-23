@@ -15,7 +15,6 @@
 
         <div class="d-flex">
             <x-pagination :total_pages="$total_pages" :params="[]" />
-
         </div>
 
         @if(Session::has('success'))

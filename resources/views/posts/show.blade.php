@@ -24,15 +24,14 @@
             @if($post->isSaved())
 
             <a href="{{route('posts.save', $post->id)}}" id="save-btn" class="btn btn-outline-secondary">
-                <i class="bi bi-bookmark-check-fill"></i>
+                <i class="bi bi-bookmark-x-fill"></i>
             </a>
 
             @else
 
             <a href="{{route('posts.save', $post->id)}}" id="save-btn" class="btn btn-outline-secondary">
-                <i class="bi bi-bookmark"></i>
+                <i class="bi bi-bookmark-plus"></i>
             </a>
-
             @endif
             @endif
             <p>{!!nl2br($post->body)!!}</p>
