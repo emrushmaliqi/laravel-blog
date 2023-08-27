@@ -2,7 +2,7 @@
     <x-bootstrap>
         <div class="container">
 
-            <h3>{{$user->name}} - Following</h3>
+            <h3 class="my-4">{{$user->name}} - Following</h3>
 
             <div>
                 @if($user->following->count() > 0)
@@ -27,11 +27,12 @@
                         </a>
                         @endif
                     </div>
-                    @endforeach
-                    @else
-                    <h4 class="text-center">{{$user->name}} is not following anyone</h4>
-                    @endif
                 </div>
+                @endforeach
+                @else
+                <h4 class="text-center">{{$user->name}} is not following anyone</h4>
+                @endif
             </div>
+        </div>
     </x-bootstrap>
 </x-app-layout>

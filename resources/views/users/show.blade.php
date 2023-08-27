@@ -50,7 +50,7 @@
                 </div>
                 @endforeach
                 @else
-                <h3>No posts yet</h3>
+                <h3 class="align-self-center mx-auto">No posts yet</h3>
                 @endif
             </div>
             <div class="w-25 mt-5">
@@ -78,8 +78,8 @@
         </div>
 
         @else
-        <div>
-            <h2>User not found</h2>
+        <div class="d-flex justify-content-center">
+            <h2 class="mx-auto mt-5 pt-5">User not found</h2>
         </div>
         @endif
     </x-bootstrap>

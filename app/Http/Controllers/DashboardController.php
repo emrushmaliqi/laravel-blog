@@ -14,7 +14,13 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return view('dashboard.index');
+        $total_users = User::count();
+        $total_posts = Post::count();
+        $total_comments = Comment::count();
+        $total_likes = Like::count();
+        $total_categories = Category::count();
+
+        return view('dashboard.index', compact('total_users', 'total_posts', 'total_comments', 'total_likes', 'total_categories'));
     }
 
     public function users(Request $request)

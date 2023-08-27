@@ -2,7 +2,7 @@
     <x-bootstrap>
         <div class="container">
 
-            <h3>{{$user->name}} - Followers</h3>
+            <h3 class="my-4">{{$user->name}} - Followers</h3>
 
             <div>
                 @if($user->followers->count() > 0)
@@ -30,11 +30,11 @@
                         @endif
 
                     </div>
-                    @endforeach
-                    @else
-                    <h4 class="text-center">{{$user->name}} is not followed by anyone</h4>
-                    @endif
                 </div>
+                @endforeach
+                @else
+                <h4 class="text-center">{{$user->name}} is not followed by anyone</h4>
+                @endif
             </div>
             @if(Session::has('success'))
             <x-alert type="success">{{Session::get('success')}}</x-alert>

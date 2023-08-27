@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-bootstrap>
         <div class="container">
-            <span>
+            <span class="d-block my-3">
                 Posts search results for "{{$search}}"
             </span>
 
